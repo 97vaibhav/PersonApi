@@ -17,7 +17,7 @@ func RegisterPersonHandlers(router *mux.Router, personUsecase *usecase.PersonUse
 	router.HandleFunc("/people", createPerson(personUsecase)).Methods("POST")
 	router.HandleFunc("/people/{id}", updatePersonDetails(personUsecase)).Methods("PUT")
 	router.HandleFunc("/people/{id}", deletePerson(personUsecase)).Methods("DELETE")
-
+	router.HandleFunc("/people", getPeopleByNameHandler(personUsecase)).Methods("GET")
 }
 
 func getPeopleHandler(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
@@ -107,5 +107,15 @@ func deletePerson(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
 		}
 
 		json.NewEncoder(w).Encode(deletedPerson)
+	}
+}
+
+func getPeopleByNameHandler(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		personName := r.URL.Query().Get("name")
+		people := personUsecase.GetByName(personName)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(people)
 	}
 }

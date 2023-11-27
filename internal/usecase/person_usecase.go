@@ -10,6 +10,7 @@ type PersonRepository interface {
 	CreatePerson(person domain.Person) error
 	UpdatePersonDetails(id string, updatedPerson domain.Person) error
 	DeletePerson(id string) (domain.Person, error)
+	GetByName(name string) []domain.Person
 }
 
 type PersonUsecase struct {
@@ -39,4 +40,8 @@ func (uc *PersonUsecase) UpdatePersonDetails(id string, updatedPerson domain.Per
 
 func (uc *PersonUsecase) DeletePerson(id string) (domain.Person, error) {
 	return uc.personRepo.DeletePerson(id)
+}
+
+func (uc *PersonUsecase) GetByName(name string) []domain.Person {
+	return uc.personRepo.GetByName(name)
 }
