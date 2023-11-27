@@ -90,3 +90,19 @@ func (r *PersonRepository) UpdatePersonDetails(id string, updatePerson domain.Pe
 	}
 	return errors.New("person not found ")
 }
+
+func (r *PersonRepository) DeletePerson(id string) (domain.Person, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	for i, p := range r.people {
+		if p.ID == id {
+			// Remove the person from the slice
+			deletedPerson := r.people[i]
+			r.people = append(r.people[:i], r.people[i+1:]...)
+			return deletedPerson, nil
+		}
+	}
+
+	return domain.Person{}, errors.New("person not found")
+}
