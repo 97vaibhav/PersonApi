@@ -64,3 +64,16 @@ func (r *PersonRepository) GetById(id string) (domain.Person, error) {
 	}
 	return domain.Person{}, errors.New("person Not found in database")
 }
+
+func (r *PersonRepository) CreatePerson(person domain.Person) error {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	for _, existingPerson := range r.people {
+		if existingPerson.Email == person.Email {
+			return errors.New("email already exist so cant create person")
+		}
+	}
+	r.people = append(r.people, person)
+	return nil
+}
