@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"strings"
 	"sync"
 
 	"github.com/97vaibhav/PersonApi/internal/domain"
@@ -106,19 +105,4 @@ func (r *PersonRepository) DeletePerson(id string) (domain.Person, error) {
 	}
 
 	return domain.Person{}, errors.New("person not found")
-}
-
-func (r *PersonRepository) GetByName(name string) []domain.Person {
-	r.mutex.RLock()
-	defer r.mutex.RUnlock()
-
-	var matchingPeople []domain.Person
-	for _, p := range r.people {
-		if strings.Contains(strings.ToLower(p.FirstName), strings.ToLower(name)) ||
-			strings.Contains(strings.ToLower(p.LastName), strings.ToLower(name)) {
-			matchingPeople = append(matchingPeople, p)
-		}
-	}
-
-	return matchingPeople
 }

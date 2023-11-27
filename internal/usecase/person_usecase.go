@@ -10,7 +10,6 @@ type PersonRepository interface {
 	CreatePerson(person domain.Person) error
 	UpdatePersonDetails(id string, updatedPerson domain.Person) error
 	DeletePerson(id string) (domain.Person, error)
-	GetByName(name string) []domain.Person
 }
 
 type PersonUsecase struct {
@@ -43,5 +42,23 @@ func (uc *PersonUsecase) DeletePerson(id string) (domain.Person, error) {
 }
 
 func (uc *PersonUsecase) GetByName(name string) []domain.Person {
-	return uc.personRepo.GetByName(name)
+	var matchingPeople []domain.Person
+	people := uc.personRepo.GetAll()
+
+	for _, person := range people {
+		if ContainsName(person.FirstName, name) || ContainsName(person.LastName, name) {
+			matchingPeople = append(matchingPeople, person)
+		}
+	}
+
+	return matchingPeople
+}
+
+func (uc *PersonUsecase) GetAgeByID(id string) (int, error) {
+	person, err := uc.personRepo.GetById(id)
+	if err != nil {
+		return 0, err
+	}
+
+	return CalculateAge(person.Birthday), nil
 }

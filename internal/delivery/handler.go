@@ -18,6 +18,7 @@ func RegisterPersonHandlers(router *mux.Router, personUsecase *usecase.PersonUse
 	router.HandleFunc("/people/{id}", updatePersonDetails(personUsecase)).Methods("PUT")
 	router.HandleFunc("/people/{id}", deletePerson(personUsecase)).Methods("DELETE")
 	router.HandleFunc("/people", getPeopleByNameHandler(personUsecase)).Methods("GET")
+	router.HandleFunc("/people/{id}/age", getPersonAgeHandler(personUsecase)).Methods("GET")
 }
 
 func getPeopleHandler(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
@@ -117,5 +118,20 @@ func getPeopleByNameHandler(personUsecase *usecase.PersonUsecase) http.HandlerFu
 		people := personUsecase.GetByName(personName)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(people)
+	}
+}
+func getPersonAgeHandler(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		params := mux.Vars(r)
+		personID := params["id"]
+		age, err := personUsecase.GetAgeByID(personID)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "Person with ID %s not found", personID)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]int{"age": age})
 	}
 }
