@@ -15,6 +15,8 @@ func RegisterPersonHandlers(router *mux.Router, personUsecase *usecase.PersonUse
 	router.HandleFunc("/people", getPeopleHandler(personUsecase)).Methods("GET")
 	router.HandleFunc("/people/{id}", getPersonByID(personUsecase)).Methods("GET")
 	router.HandleFunc("/people", createPerson(personUsecase)).Methods("POST")
+	router.HandleFunc("/people/{id}", updatePersonDetails(personUsecase)).Methods("PUT")
+
 }
 
 func getPeopleHandler(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
@@ -62,5 +64,30 @@ func createPerson(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
 		}
 		json.NewEncoder(w).Encode(newPerson)
 
+	}
+}
+
+func updatePersonDetails(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		params := mux.Vars(r)
+		personID := params["id"]
+
+		var updatedPerson domain.Person
+		err := json.NewDecoder(r.Body).Decode(&updatedPerson)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Error decoding request body: %v", err)
+			return
+		}
+
+		err = personUsecase.UpdatePersonDetails(personID, updatedPerson)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "Person with ID %s not found", personID)
+			return
+		}
+
+		json.NewEncoder(w).Encode(updatedPerson)
 	}
 }

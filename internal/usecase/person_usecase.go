@@ -8,6 +8,7 @@ type PersonRepository interface {
 	GetAll() []domain.Person
 	GetById(id string) (domain.Person, error)
 	CreatePerson(person domain.Person) error
+	UpdatePersonDetails(id string, updatedPerson domain.Person) error
 }
 
 type PersonUsecase struct {
@@ -29,4 +30,8 @@ func (uc *PersonUsecase) GetById(id string) (domain.Person, error) {
 
 func (uc *PersonUsecase) CreatePerson(person domain.Person) error {
 	return uc.personRepo.CreatePerson(person)
+}
+
+func (uc *PersonUsecase) UpdatePersonDetails(id string, updatedPerson domain.Person) error {
+	return uc.personRepo.UpdatePersonDetails(id, updatedPerson)
 }

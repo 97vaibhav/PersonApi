@@ -77,3 +77,16 @@ func (r *PersonRepository) CreatePerson(person domain.Person) error {
 	r.people = append(r.people, person)
 	return nil
 }
+
+func (r *PersonRepository) UpdatePersonDetails(id string, updatePerson domain.Person) error {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+
+	for i, p := range r.people {
+		if p.ID == id {
+			r.people[i] = updatePerson
+		}
+		return nil
+	}
+	return errors.New("person not found ")
+}
