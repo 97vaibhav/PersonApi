@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"sync"
 
 	"github.com/97vaibhav/PersonApi/internal/domain"
@@ -50,4 +51,16 @@ func (r *PersonRepository) GetAll() []domain.Person {
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 	return r.people
+}
+
+func (r *PersonRepository) GetById(id string) (domain.Person, error) {
+	r.mutex.RLock()
+	defer r.mutex.RUnlock()
+
+	for _, p := range r.people {
+		if p.ID == id {
+			return p, nil
+		}
+	}
+	return domain.Person{}, errors.New("person Not found in database")
 }
