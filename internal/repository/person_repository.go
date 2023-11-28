@@ -1,10 +1,10 @@
 package repository
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/97vaibhav/PersonApi/internal/domain"
+	"github.com/97vaibhav/PersonApi/internal/errors"
 )
 
 type PersonRepository struct {
@@ -62,7 +62,7 @@ func (r *PersonRepository) GetById(id string) (domain.Person, error) {
 			return p, nil
 		}
 	}
-	return domain.Person{}, errors.New("person Not found in database")
+	return domain.Person{}, errors.ErrPersonNotFound
 }
 
 func (r *PersonRepository) CreatePerson(person domain.Person) error {
@@ -71,7 +71,7 @@ func (r *PersonRepository) CreatePerson(person domain.Person) error {
 
 	for _, existingPerson := range r.people {
 		if existingPerson.Email == person.Email {
-			return errors.New("email already exist so cant create person")
+			return errors.ErrEmailAlreadyExists
 		}
 	}
 	r.people = append(r.people, person)
@@ -88,7 +88,7 @@ func (r *PersonRepository) UpdatePersonDetails(id string, updatePerson domain.Pe
 			return nil
 		}
 	}
-	return errors.New("person not found ")
+	return errors.ErrPersonNotFound
 }
 
 func (r *PersonRepository) DeletePerson(id string) (domain.Person, error) {
@@ -104,5 +104,5 @@ func (r *PersonRepository) DeletePerson(id string) (domain.Person, error) {
 		}
 	}
 
-	return domain.Person{}, errors.New("person not found")
+	return domain.Person{}, errors.ErrPersonNotFound
 }

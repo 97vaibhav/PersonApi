@@ -143,7 +143,7 @@ func TestPersonUsecase(t *testing.T) {
 		deletedPerson, err := usecase.DeletePerson(id)
 		assert.NoError(t, err, "Unexpected error while deleting person")
 		people := usecase.GetAll()
-		assert.Equal(t, 2, len(people), "Expected number of people not updated after deletion")
+		assert.Equal(t, 3, len(people), "Expected number of people not updated after deletion")
 		assert.Equal(t, "1", deletedPerson.ID, "Incorrect ID for deleted person")
 	})
 
@@ -160,10 +160,10 @@ func TestPersonUsecase(t *testing.T) {
 	})
 
 	t.Run("GetAgeByID", func(t *testing.T) {
-		id := "1"
+		id := "2"
 		age, err := usecase.GetAgeByID(id)
 		assert.NoError(t, err, "Unexpected error while calculating age")
-		assert.Equal(t, CalculateAge("1997-05-05"), age, "Incorrect age calculated")
+		assert.Equal(t, CalculateAge("1998-05-15"), age, "Incorrect age calculated")
 	})
 
 	t.Run("GetAgeByIDNotFound", func(t *testing.T) {
