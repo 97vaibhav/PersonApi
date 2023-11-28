@@ -85,8 +85,8 @@ func (r *PersonRepository) UpdatePersonDetails(id string, updatePerson domain.Pe
 	for i, p := range r.people {
 		if p.ID == id {
 			r.people[i] = updatePerson
+			return nil
 		}
-		return nil
 	}
 	return errors.New("person not found ")
 }
