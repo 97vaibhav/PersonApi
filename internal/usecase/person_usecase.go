@@ -45,12 +45,12 @@ func (uc *PersonUsecase) GetByName(name string) []domain.Person {
 	var matchingPeople []domain.Person
 	people := uc.personRepo.GetAll()
 
+	// Iterate through people and check if either first or last name contains the provided name
 	for _, person := range people {
 		if ContainsName(person.FirstName, name) || ContainsName(person.LastName, name) {
 			matchingPeople = append(matchingPeople, person)
 		}
 	}
-
 	return matchingPeople
 }
 

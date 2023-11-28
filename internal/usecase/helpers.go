@@ -1,6 +1,9 @@
 package usecase
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 func CalculateAge(birthday string) int {
 	birthDate, err := time.Parse("2006-01-02", birthday)
@@ -19,13 +22,7 @@ func CalculateAge(birthday string) int {
 }
 
 func ContainsName(target, search string) bool {
-	return len(search) > 0 && len(target) > 0 && len(target) >= len(search) &&
-		(containsIgnoreCase(target, search) || containsIgnoreCase(target, search))
-}
-
-// containsIgnoreCase checks if the target string contains the search string or not
-func containsIgnoreCase(target, search string) bool {
-	return len(target) >= len(search) &&
-		target[:len(search)] == search ||
-		(len(target) > len(search) && containsIgnoreCase(target[1:], search))
+	target = strings.ToLower(target)
+	search = strings.ToLower(search)
+	return strings.Contains(target, search)
 }
