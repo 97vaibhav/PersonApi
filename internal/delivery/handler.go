@@ -11,16 +11,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RegisterPersonHandlers(router *mux.Router, personUsecase *usecase.PersonUsecase) {
-	router.HandleFunc("/people", getPeopleHandler(personUsecase)).Methods("GET")
-	router.HandleFunc("/people/{id}", getPersonByID(personUsecase)).Methods("GET")
-	router.HandleFunc("/people", createPerson(personUsecase)).Methods("POST")
-	router.HandleFunc("/people/{id}", updatePersonDetails(personUsecase)).Methods("PUT")
-	router.HandleFunc("/people/{id}", deletePerson(personUsecase)).Methods("DELETE")
-	router.HandleFunc("/people", getPeopleByNameHandler(personUsecase)).Methods("GET")
-	router.HandleFunc("/people/{id}/age", getPersonAgeHandler(personUsecase)).Methods("GET")
-}
-
 func getPeopleHandler(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -49,7 +39,6 @@ func createPerson(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		var newPerson domain.Person
-
 		err := json.NewDecoder(r.Body).Decode(&newPerson)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -57,7 +46,6 @@ func createPerson(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
 			return
 		}
 		newPerson.ID = uuid.New().String()
-
 		err = personUsecase.CreatePerson(newPerson)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -65,7 +53,6 @@ func createPerson(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
 			return
 		}
 		json.NewEncoder(w).Encode(newPerson)
-
 	}
 }
 
@@ -74,7 +61,6 @@ func updatePersonDetails(personUsecase *usecase.PersonUsecase) http.HandlerFunc 
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
 		personID := params["id"]
-
 		var updatedPerson domain.Person
 		err := json.NewDecoder(r.Body).Decode(&updatedPerson)
 		if err != nil {
@@ -82,14 +68,12 @@ func updatePersonDetails(personUsecase *usecase.PersonUsecase) http.HandlerFunc 
 			fmt.Fprintf(w, "Error decoding request body: %v", err)
 			return
 		}
-
 		err = personUsecase.UpdatePersonDetails(personID, updatedPerson)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "Person with ID %s not found", personID)
 			return
 		}
-
 		json.NewEncoder(w).Encode(updatedPerson)
 	}
 }
@@ -99,14 +83,12 @@ func deletePerson(personUsecase *usecase.PersonUsecase) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
 		personID := params["id"]
-
 		deletedPerson, err := personUsecase.DeletePerson(personID)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "Person with ID %s not found", personID)
 			return
 		}
-
 		json.NewEncoder(w).Encode(deletedPerson)
 	}
 }

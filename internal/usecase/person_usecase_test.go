@@ -159,6 +159,16 @@ func TestPersonUsecase(t *testing.T) {
 		assert.Equal(t, 2, len(matchingPeople), "Expected number of matching people not returned")
 	})
 
+	t.Run("GetByName", func(t *testing.T) {
+		matchingPeople := usecase.GetByName("x")
+		assert.Equal(t, 0, len(matchingPeople), "Expected number of matching people not returned")
+	})
+
+	t.Run("GetByNameForLastName", func(t *testing.T) {
+		matchingPeople := usecase.GetByName("gup")
+		assert.Equal(t, 1, len(matchingPeople), "Expected number of matching people not returned")
+	})
+
 	t.Run("GetAgeByID", func(t *testing.T) {
 		id := "2"
 		age, err := usecase.GetAgeByID(id)

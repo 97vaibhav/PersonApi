@@ -31,27 +31,26 @@ type Person struct {
 
 # Project structure
 ```
-.
 ├── Readme.md
 ├── cmd
-│   └── main.go  // main file to run the program
+│   └── main.go
 ├── go.mod
 ├── go.sum
 └── internal
     ├── delivery
-    │   └── handler.go // routing is been implemented here
+    │   ├── handler.go //handling routes
+    │   └── routes.go // declaring routes
     ├── domain
-    │   └── person.go // Person struct
+    │   └── person.go //person struct defined here
     ├── errors
-    │   └── errors.go
+    │   └── errors.go
     ├── repository
-    │   ├── person_repository.go // all database operation goes here (In memory)
-    │   └── person_repository_test.go
+    │   ├── person_repository.go // all database operation goes here (in memory for this project)
+    │   └── person_repository_test.go
     └── usecase
         ├── helpers.go
-        ├── person_usecase.go // (business logic)
+        ├── person_usecase.go // business logic
         └── person_usecase_test.go
-
 ```
 ## To run the application
 ```
