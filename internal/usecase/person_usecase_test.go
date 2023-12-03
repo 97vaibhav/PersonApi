@@ -110,6 +110,28 @@ func TestPersonUsecase(t *testing.T) {
 		assert.Error(t, err, "Expected error for duplicate email")
 	})
 
+	t.Run("Create Person failed due to invalid Email", func(t *testing.T) {
+		newPerson := domain.Person{
+			ID:        "4",
+			FirstName: "NewFirst",
+			LastName:  "PersonLast",
+			Email:     "newpersonexample.com",
+			Birthday:  "2000-01-01",
+		}
+		err := usecase.CreatePerson(newPerson)
+		assert.Error(t, err, "error because Email is not valid")
+	})
+	t.Run("Create Person failed due to invalid birthday format", func(t *testing.T) {
+		newPerson := domain.Person{
+			ID:        "4",
+			FirstName: "NewFirst",
+			LastName:  "PersonLast",
+			Email:     "newperson@example.com",
+			Birthday:  "01-01-1998",
+		}
+		err := usecase.CreatePerson(newPerson)
+		assert.Error(t, err, "error because birthday is not in correct format")
+	})
 	t.Run("UpdatePersonDetails", func(t *testing.T) {
 		id := "1"
 		updatePerson := domain.Person{
@@ -125,6 +147,30 @@ func TestPersonUsecase(t *testing.T) {
 		assert.Equal(t, updatePerson, updatedPerson, "Person details not updated correctly")
 	})
 
+	t.Run("UpdatePersonDetailsForInvalidEmailID", func(t *testing.T) {
+		id := "1"
+		updatePerson := domain.Person{
+			ID:        id,
+			FirstName: "Updated",
+			LastName:  "Person",
+			Email:     "invalidemail",
+			Birthday:  "1995-01-01",
+		}
+		err := usecase.UpdatePersonDetails(id, updatePerson)
+		assert.Error(t, err, "Expected error because Email is not Valid")
+	})
+	t.Run("UpdatePersonDetails Failed Because Of wrong Birthday Format", func(t *testing.T) {
+		id := "1"
+		updatePerson := domain.Person{
+			ID:        id,
+			FirstName: "Updated",
+			LastName:  "Person",
+			Email:     "goodemail@gamil.com",
+			Birthday:  "01-01-1997",
+		}
+		err := usecase.UpdatePersonDetails(id, updatePerson)
+		assert.Error(t, err, "Expected error because Birthday is not in corrrect format")
+	})
 	t.Run("UpdatePersonDetailsNotFound", func(t *testing.T) {
 		id := "nonexistent-id"
 		updatePerson := domain.Person{
@@ -173,7 +219,7 @@ func TestPersonUsecase(t *testing.T) {
 		id := "2"
 		age, err := usecase.GetAgeByID(id)
 		assert.NoError(t, err, "Unexpected error while calculating age")
-		assert.Equal(t, CalculateAge("1998-05-15"), age, "Incorrect age calculated")
+		assert.Equal(t, calculateAge("1998-05-15"), age, "Incorrect age calculated")
 	})
 
 	t.Run("GetAgeByIDNotFound", func(t *testing.T) {
