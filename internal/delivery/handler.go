@@ -71,7 +71,7 @@ func updatePersonDetails(personUsecase *usecase.PersonUsecase) http.HandlerFunc 
 		err = personUsecase.UpdatePersonDetails(personID, updatedPerson)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Person with ID %s not found", personID)
+			fmt.Fprintf(w, "Error updateing person: %v", err)
 			return
 		}
 		json.NewEncoder(w).Encode(updatedPerson)

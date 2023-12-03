@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/97vaibhav/PersonApi/internal/domain"
+	"github.com/97vaibhav/PersonApi/internal/errors"
 )
 
 type PersonRepository interface {
@@ -30,11 +31,49 @@ func (uc *PersonUsecase) GetById(id string) (domain.Person, error) {
 }
 
 func (uc *PersonUsecase) CreatePerson(person domain.Person) error {
+	// Validating non-empty first name
+	if person.FirstName == "" {
+		return errors.ErrEmptyFirstName
+	}
+	// Validating if email is correct format and not empty
+	if !isValidEmail(person.Email) || person.Email == "" {
+		return errors.ErrInvalidEmail
+	}
+	// Validating birthday format
+	if !isValidBirthday(person.Birthday) {
+		return errors.ErrInvalidBirthday
+	}
+
 	return uc.personRepo.CreatePerson(person)
 }
 
 func (uc *PersonUsecase) UpdatePersonDetails(id string, updatedPerson domain.Person) error {
-	return uc.personRepo.UpdatePersonDetails(id, updatedPerson)
+	// Validate email format and non-empty value
+	if !isValidEmail(updatedPerson.Email) || updatedPerson.Email == "" {
+		return errors.ErrInvalidEmail
+	}
+
+	// Validate birthday format and non-empty value
+	if !isValidBirthday(updatedPerson.Birthday) || updatedPerson.Birthday == "" {
+		return errors.ErrInvalidBirthday
+	}
+	// Validate non-empty first name
+	if updatedPerson.FirstName == "" {
+		return errors.ErrEmptyFirstName
+	}
+	// Geting the existing person
+	existingPerson, err := uc.personRepo.GetById(id)
+	if err != nil {
+		return errors.ErrPersonNotFound
+	}
+
+	// Updating fields
+	existingPerson.FirstName = updatedPerson.FirstName
+	existingPerson.LastName = updatedPerson.LastName
+	existingPerson.Email = updatedPerson.Email
+	existingPerson.Birthday = updatedPerson.Birthday
+
+	return uc.personRepo.UpdatePersonDetails(id, existingPerson)
 }
 
 func (uc *PersonUsecase) DeletePerson(id string) (domain.Person, error) {
@@ -47,7 +86,7 @@ func (uc *PersonUsecase) GetByName(name string) []domain.Person {
 
 	// Iterate through people and check if either first or last name contains the provided name
 	for _, person := range people {
-		if ContainsName(person.FirstName, name) || ContainsName(person.LastName, name) {
+		if containsName(person.FirstName, name) || containsName(person.LastName, name) {
 			matchingPeople = append(matchingPeople, person)
 		}
 	}
@@ -59,6 +98,5 @@ func (uc *PersonUsecase) GetAgeByID(id string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
-	return CalculateAge(person.Birthday), nil
+	return calculateAge(person.Birthday), nil
 }
